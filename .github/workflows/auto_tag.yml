@@ -1,0 +1,73 @@
+# Doc: https://aplazo.atlassian.net/wiki/spaces/AE/pages/3678568578/Automated+Version+Tagging+for+CI+CD
+
+name: Auto-increment Tag on Merge
+
+on:
+  push:
+    branches:
+      - main # This workflow triggers whenever code is pushed to the 'main' branch.
+
+jobs:
+  create-new-tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get latest tag and calculate next version
+        id: get_next_version
+        run: |
+          # Fetch all tags from the remote. This is crucial for accurate versioning.
+          git fetch origin --tags
+
+          # Get the latest tag. We use 'git describe' which finds the most recent tag reachable from a commit.
+          # '--tags' considers any tag (not just annotated tags).
+          # '--match "v*.*.*"' ensures we only consider tags that look like versions (e.g., v1.2.3).
+          # 'sort -V' sorts versions numerically. 'head -n 1' gets the latest.
+          LATEST_TAG=$(git tag --sort=-v:refname | grep -E '^v[0-9]+\.[0-9]+\.[0-9]+$' | head -n 1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            # If no tags are found, start from v0.1.0
+            NEW_VERSION="v0.1.0"
+            echo "No existing tags found. Starting version at ${NEW_VERSION}."
+          else
+            # Extract the version number (e.g., "1.2.3" from "v1.2.3")
+            VERSION_NUMBER=${LATEST_TAG#v}
+
+            # Split the version into major, minor, and patch parts.
+            # IFS (Internal Field Separator) is set to '.' to split the string.
+            IFS='.' read -r MAJOR MINOR PATCH <<< "$VERSION_NUMBER"
+
+            # Increment the minor version.
+            MINOR=$((MINOR + 1))
+            # Reset the patch version to 0 for a new minor release.
+            PATCH=0
+
+            # Construct the new version tag.
+            NEW_VERSION="v${MAJOR}.${MINOR}.${PATCH}"
+            echo "Latest tag found: ${LATEST_TAG}"
+            echo "New version calculated: ${NEW_VERSION}"
+          fi
+
+          # Set the new version as an output variable so subsequent steps can use it.
+          echo "NEW_VERSION=${NEW_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Create and Push New Tag
+        run: |
+          # Configure Git user for the commit, important for GitHub Actions.
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+
+          # Create the new tag using the calculated version.
+          git tag ${{ steps.get_next_version.outputs.NEW_VERSION }}
+
+          # Push the new tag to the remote repository.
+          git push origin ${{ steps.get_next_version.outputs.NEW_VERSION }}
+        env:
+          # Ensure the GITHUB_TOKEN has write permissions (handled by job permissions).
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

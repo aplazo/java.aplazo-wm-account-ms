@@ -1,0 +1,48 @@
+name: Validate PR title and description
+
+on:
+  pull_request:
+    branches:
+      - master    # change to 'main' if that’s your default branch
+    types: [opened, edited, synchronize, reopened, ready_for_review]
+
+jobs:
+  build:
+    name: validate pr title and description
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "validate pr title and description"
+      - uses: actions/checkout@v4
+
+      - name: Validate PR title and body
+        shell: bash
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+        run: |
+          set -euo pipefail
+
+          TITLE="$PR_TITLE"
+          BODY="$PR_BODY"
+
+          echo "🔍 Validating PR title and description..."
+          echo "Title: $TITLE"
+          echo "Body length: ${#BODY}"
+
+          # ✅ Adjust for your Jira project keys or keep it generic
+           REGEX='^[A-Z]{2,10}-[0-9]+[ :].{3,}$'
+
+          # 1️⃣ Validate title
+          if ! printf '%s' "$TITLE" | grep -Eq "$REGEX"; then
+            echo "::error::❌ The PR title must start with a Jira issue key (e.g., AEX-123: short description)"
+            exit 1
+          fi
+
+          # 2️⃣ Validate description (must not be empty / too short)
+          STRIPPED="$(printf '%s' "$BODY" | tr -d '[:space:]')"
+          if [ -z "$STRIPPED" ] || [ "${#BODY}" -lt 10 ]; then
+            echo "::error::❌ The PR body must include a meaningful description (≥ 10 characters)."
+            exit 1
+          fi
+
+          echo "✅ Validation passed successfully!"

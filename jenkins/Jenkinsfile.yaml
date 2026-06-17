@@ -1,0 +1,52 @@
+pipeline:
+  library:
+    - "aplazo"
+  agent:
+    node:
+      label: 'Jenkins-Slave'
+  tools:
+    jdk: "Java17"
+    maven: "latest"
+  stages:
+    - stage: "Test"
+      when:
+        - "branch 'PR-*'"
+      steps:
+        script:
+          - "notifySlack.message('Running Tests...')"
+          - "aplazoTest(
+              SONAR_ARGS: '-Dsonar.qualitygate.wait=true',
+              useMavenSettings: true,
+              PROJECT_TYPE: 'java',
+              RUN_UNIT_TESTS: true,
+              RUN_SONARQUBE_ANALYSIS: false,
+              RUN_QUALITY_GATE_CHECK: false
+            )"
+    - stage: " v"
+      when:
+        - "tag 'v*'"
+      steps:
+        script:
+          - "notifySlack.message('Building...')"
+          - "aplazoBuild(
+              PUBLISH_TO_NEXUS: true,
+              GENERATE_OPENAPI: true,
+              useMavenSettings: true              
+            )"
+    - stage: "Deploy"
+      when:
+        - "tag 'v*'"
+      tools:
+        nodejs: "node"
+      environment:
+        AWS_REGION: 'us-west-1'
+        PULUMI_CONFIG_PASSPHRASE_FILE: 'passphrase'
+      steps:
+        script:
+          - "notifySlack.message('Deploying...')"
+          - "aplazoDeploy()"
+  post:
+    always:
+      script:
+        - "notifySlack.sendFinalNotification()"
+        - "aplazoJellyfish( ENVIRONMENT: 'prod' )"

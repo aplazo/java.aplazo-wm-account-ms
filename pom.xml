@@ -1,0 +1,72 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>mx.aplazo.wm.account</groupId>
+	<artifactId>wm-account-ms</artifactId>
+	<version>1.0.0</version>
+	<packaging>pom</packaging>
+	
+	<parent>
+		<groupId>mx.aplazo.architecture</groupId>
+		<artifactId>aplazo-parent</artifactId>
+		<version>2.7.1</version>
+		<relativePath /> <!-- lookup parent from repository -->
+	</parent>
+
+	<properties>
+		<jacoco.version>0.8.12</jacoco.version>
+		<sonarqube.plugin.version>sonarqube.plugin.version</sonarqube.plugin.version>
+		<sonar.host.url>https://sonar.aplazo.dev</sonar.host.url>
+		<sonar.projectKey>${project.artifactId}</sonar.projectKey>
+		<sonar.language>java</sonar.language>
+		<sonar.java.binaries>target</sonar.java.binaries>
+		<sonar.exclusions>
+			/wm-account-ms-client/src/main/java/mx/aplazo/microservices/**/model/**/*,
+			/wm-account-ms-service/src/main/java/mx/aplazo/microservices/**/model/**/*,
+			/wm-account-ms-service/src/main/java/mx/aplazo/microservices/**/config/**/*,
+			/wm-account-ms-service/src/main/java/mx/aplazo/microservices/**/repository/**/*,
+			/wm-account-ms-service/src/main/java/mx/aplazo/microservices/**/WMAccountMsApp.java,
+			/wm-account-ms-service/src/main/java/mx/aplazo/microservices/**/NoSecurityConfig.java,
+		</sonar.exclusions>
+	</properties>
+
+	<name>Microservice WMAccountMs</name>
+	<description>Briefly description of Microservice WMAccountMs</description>
+
+	<modules>
+		<module>wm-account-ms-client</module>
+		<module>wm-account-ms-service</module>
+	</modules>
+	
+	<dependencies>			
+	</dependencies>
+
+	<dependencyManagement>
+		<dependencies>
+			<dependency>
+				<groupId>mx.aplazo.wm.account</groupId>
+				<artifactId>wm-account-ms-client</artifactId>
+				<version>${project.version}</version>
+			</dependency>			
+		</dependencies>
+	</dependencyManagement>
+	
+	<repositories>
+		<repository>
+			<id>nexus-aplazo</id>
+			<url>https://nexus.aplazo.dev/repository/maven-releases/</url>
+		</repository>
+	</repositories>
+
+	<distributionManagement>
+		<snapshotRepository>
+			<id>nexus-aplazo</id>
+			<url>https://nexus.aplazo.dev/repository/maven-snapshots/</url>
+		</snapshotRepository>
+		<repository>
+			<id>nexus-aplazo</id>
+			<url>https://nexus.aplazo.dev/repository/maven-releases/</url>
+		</repository>
+	</distributionManagement>
+</project>

@@ -1,0 +1,22 @@
+management:
+  endpoint:
+    health:
+      enabled: true
+      show-details: always
+    info:
+      enabled: true
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health,info
+spring:
+  profiles:
+    active: api
+aplazo:
+ openapi:
+  generate: ${APLAZO_GENERATE_OPENAPI:false}
+api:
+  aplazo:
+    security:
+      secret: ${APLAZO_SDK_SECRET:secreto}

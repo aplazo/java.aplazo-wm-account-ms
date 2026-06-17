@@ -1,0 +1,6 @@
+# Git cannot add a completely empty directory.
+# To keep empty directories in the repository 
+# just add the file ".gitkeep" and Git will now 
+# be able to maintain this directory in the repository.
+# 
+# Author: APLAZO
