@@ -1,0 +1,53 @@
+site_name: ${artifactId}
+site_description: Documentation for the aex service
+site_url: https://backstage.aplazo.dev/catalog/default/component/${artifactId}
+repo_url: https://github.com/aplazo/${artifactId}
+repo_name: aplazo/${artifactId}
+docs_dir: ./src
+
+nav:
+  - Home: index.md
+  - Architecture:
+      - C4 Level 1 - Context: architecture/c4-context.md
+      - C4 Level 2 - Containers: architecture/c4-containers.md
+      - C4 Level 3 - Components: architecture/c4-components.md
+      - C4 Level 4 - Code: architecture/c4-code.md
+  - ADRs:
+      - ADR-000 Template: adr/adr-001-template.md
+  - Operations:
+      - Runbooks: runbooks/example.md
+      - Playbooks: playbooks/deploy.md
+
+plugins:
+  - search
+  - techdocs-core
+
+markdown_extensions:
+  - toc:
+      permalink: true
+  - codehilite
+  - tables
+  - admonition
+  - pymdownx.superfences
+  - pymdownx.tabbed
+  - pymdownx.details
+  - pymdownx.emoji
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+
+theme:
+  name: material
+  palette:
+    primary: blue
+    accent: light blue
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.highlight
+    - search.share
+    - content.code.copy
+    - content.code.annotate
