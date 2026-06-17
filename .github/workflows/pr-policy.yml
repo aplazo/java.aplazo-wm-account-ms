@@ -1,0 +1,15 @@
+name: PR Policy
+
+on:
+  pull_request:
+    types: [ opened, edited, synchronize, reopened, ready_for_review ]
+    branches: [ master, main ]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  jira-linking:
+    name: Validate PR policy
+    uses: aplazo/.github/.github/workflows/pr-jira-link-policy.yml@v1.1
