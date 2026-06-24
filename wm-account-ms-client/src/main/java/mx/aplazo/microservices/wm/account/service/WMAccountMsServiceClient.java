@@ -18,7 +18,7 @@ import mx.aplazo.microservices.wm.account.model.request.WMAccountMsRequest;
  * 
  */
 
-@FeignClient(name="WMAccountMs",url="${aplazo.url.api.group.apiname}")
+@FeignClient(name="WMAccountMs",url="${aplazo.url.api.group.apiname:http://localhost}")
 public interface WMAccountMsServiceClient{
 	
 	@GetMapping("/api/v1")
