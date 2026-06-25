@@ -25,4 +25,4 @@ RUN apk add --no-cache curl && \
     && echo 'networkaddress.cache.negative.ttl=3' >> $JAVA_HOME/conf/security/java.security \
 
 USER spring:spring
-ENTRYPOINT ["java","--add-opens", "java.base/java.io=ALL-UNNAMED",, "-Dspring.profiles.active=api","-XX:+UseContainerSupport","-javaagent:/app/dd-java-agent.jar", "-cp","app:/app/lib/*","mx.aplazo.microservices.wm.account.WMAccountMsApp"]
+ENTRYPOINT ["java","--add-opens","java.base/java.io=ALL-UNNAMED","-Dspring.profiles.active=api","-XX:+UseContainerSupport","-javaagent:/app/dd-java-agent.jar","-cp","app:/app/lib/*","mx.aplazo.microservices.wm.account.WMAccountMsApp"]
