@@ -11,7 +11,7 @@
 	<parent>
 		<groupId>mx.aplazo.wm.account</groupId>
 		<artifactId>wm-account-ms</artifactId>
-		<version>1.0.2</version>
+		<version>1.0.3</version>
 	</parent>
 
 	<dependencies>
@@ -41,6 +41,11 @@
         <dependency>
             <groupId>mx.aplazo.architecture</groupId>
             <artifactId>sqs</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>mx.aplazo.payloads</groupId>
+            <artifactId>base-sns-payload</artifactId>
+            <version>1.0.1</version>
         </dependency>
         <dependency>
             <groupId>mx.aplazo.architecture</groupId>
