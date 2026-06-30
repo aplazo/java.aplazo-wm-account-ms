@@ -22,3 +22,10 @@ aplazo:
     api:
       # Prod: auth-hydra base URL is mandatory (CloudMap internal name). No default — fail fast if unset.
       auth-hydra-url: ${AUTH_HYDRA_URL}
+      # Prod: partners-ms base URL for the post-Unlink notification (C-NEW-02). Mandatory.
+      partners-url: ${PARTNERS_MS_URL}
+api:
+  aplazo:
+    oauth:
+      # Prod: OAuth2 client id the Hydra revocation is scoped to. Mandatory — fail fast if unset.
+      client-id: ${WM_OAUTH_CLIENT_ID}
