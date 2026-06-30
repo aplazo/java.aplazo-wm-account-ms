@@ -1,6 +1,17 @@
 logging:
   level:
     root: info
+api:
+  aplazo:
+    customer:
+      account:
+        changes:
+          sqs:
+            enabled: false
+aplazo:
+  cloudaws:
+    sqs:
+      region: us-east-1
 spring:
   autoconfigure:
     exclude:

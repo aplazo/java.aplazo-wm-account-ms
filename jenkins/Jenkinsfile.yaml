@@ -45,6 +45,23 @@ pipeline:
         script:
           - "notifySlack.message('Deploying...')"
           - "aplazoDeploy()"
+    - stage: "Deploy to sandbox"
+      agent:
+        node:
+          label: "Jenkins-Slave-Sandbox"
+      when:
+        - "tag 'v*'"
+      tools:
+        nodejs: "node"
+      environment:
+        AWS_REGION: "us-west-2"
+        PULUMI_CONFIG_PASSPHRASE_FILE: "sandbox_passphrase"
+      steps:
+        script:
+          - "notifySlack.message('Deploying...')"
+          - "aplazoDeploy(
+              ENVIRONMENT: ['snx']
+            )"
   post:
     always:
       script:
