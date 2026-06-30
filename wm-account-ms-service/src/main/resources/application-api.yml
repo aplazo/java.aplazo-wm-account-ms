@@ -17,3 +17,8 @@ spring:
 springdoc:
   api-docs:
     enabled: ${SWAGGER_ENABLE:false}
+aplazo:
+  url:
+    api:
+      # Prod: auth-hydra base URL is mandatory (CloudMap internal name). No default — fail fast if unset.
+      auth-hydra-url: ${AUTH_HYDRA_URL}
