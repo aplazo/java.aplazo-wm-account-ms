@@ -11,6 +11,11 @@ management:
       exposure:
         include: health,info
 spring:
+  main:
+    # Required because @EnableAplazoFeingClientInterceptor and @EnableFeignClients both register
+    # Feign client specifications, which would otherwise abort startup with a
+    # BeanDefinitionOverrideException. Same setting used across Aplazo services (e.g. partners-ms).
+    allow-bean-definition-overriding: true
   profiles:
     active: api
 aplazo:
