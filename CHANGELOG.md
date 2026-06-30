@@ -5,6 +5,18 @@ All notable changes to the **wm-account-ms** microservice are documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.2.0] - 2026-06-30
+
+### Added
+- **Unlink shared-operation contract and persistence layer (BNPL-960).** Lays the reusable core that BNPL-886 will implement on top of:
+  - **Client module (API contract):** `WmAccountUnlinkClient` (`POST /wm/account/unlink`, C-02 — the `/internal/` prefix dropped per ADR-012 D-12, auth `ROLE_API` per D-13), `UnlinkAccountRequest` / `UnlinkAccountResponse` DTOs, and the contract enums `UnlinkReason`, `UnlinkSource`, `UnlinkInitiatedBy` (BNPL-955 §3.2).
+  - **Persistence (implemented):** `CustomerWmUnlinkRecord` JPA entity mapping `wm_integration.customer_wm_unlink_record` (ADR-012 D-04, one row per Unlink event) and `CustomerWmUnlinkRecordRepository`, including the most-recent-not-yet-relinked finder (C-NEW-03 target, BNPL-955 §3.8).
+  - **Interfaces (definition only — implemented under BNPL-886):** `UnlinkService` core contract; `WmAccountUnlinkController` skeleton wiring the C-02 handler to the contract (throws `UnsupportedOperationException` until the core lands); `PartnersUnlinkNotifyClient` outbound contract for the post-Unlink notification (C-NEW-02, `POST /wm/unlink/notify`) with its DTOs; and the canonical `UnlinkErrorCode` set.
+- The Unlink business logic itself (state guard → sync auth-hydra revoke → atomic DB write → sync partners-ms notify) is **not** included here — it is delivered by BNPL-886. The schema migration for `customer_wm_unlink_record` is owned by P4/DBA.
+
+### Changed
+- Bumped version to `1.2.0` across all modules (`pom.xml`, `wm-account-ms-client`, `wm-account-ms-service`).
+
 ## [1.1.0] - 2026-06-29
 
 ### Added
@@ -40,6 +52,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial project structure for the **wm-account-ms** microservice (multi-module Maven: `wm-account-ms-client`, `wm-account-ms-service`).
 - Infrastructure set up (BNPL-958): Dockerfile, Jenkins pipeline (`jenkins/Jenkinsfile.yaml`), and base configuration.
 
+[1.2.0]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.2...v1.1.0
 [1.0.2]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.0...v1.0.1
