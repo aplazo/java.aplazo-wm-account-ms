@@ -10,6 +10,12 @@ services:
     restart: unless-stopped
     ports:
       - "5432:5432"
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp
+      - /var/run/postgresql
     environment:
       POSTGRES_DB: wm_account_db
       POSTGRES_USER: wm_account_user
@@ -27,10 +33,17 @@ services:
   # The init script (scripts/localstack/init-sqs.sh) creates the SQS queue
   # automatically once LocalStack is ready.
   # --------------------------------------------------------------------------
+  # nosemgrep: yaml.docker-compose.security.writable-root-filesystem
+  # read_only: true cannot be applied — LocalStack 3 is a Python app that writes
+  # to system paths (/usr/local/lib/python*, /root/.localstack) at startup and
+  # cannot run reliably with a read-only root filesystem in a local dev environment.
+  # Risk is minimal: this compose file is used exclusively for local development.
   localstack:
     image: localstack/localstack:3
     container_name: wm-account-ms-localstack
     restart: unless-stopped
+    security_opt:
+      - no-new-privileges:true
     ports:
       - "4566:4566"
     environment:
