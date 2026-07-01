@@ -14,6 +14,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enabled `@EnableFeignClients` (scoped to `mx.aplazo.microservices.wm.account.feign`) on `WMAccountMsApp`.
 - Bumped version to `1.1.0` across all modules (`pom.xml`, `wm-account-ms-client`, `wm-account-ms-service`).
 
+## [1.0.3] - 2026-06-25
+
+### Added
+- **Local development environment (`docker-compose.yml`).** Single-command local setup via `docker compose up -d`. Includes:
+  - **PostgreSQL 14** (`localhost:5432`) — database (`wm_account_db` / `wm_account_user` / `wm_account_pass`).
+  - **LocalStack 3** (`localhost:4566`) — AWS SQS emulator. The queue `wm_customer_account_changes_local` is created automatically on startup via `scripts/localstack/init-sqs.sh`.
+- **`application-local.yml`** fully configured with hardcoded values that match the docker-compose services. No environment variables required to start locally — just `docker compose up -d` and run with `-Dspring.profiles.active=local`.
+- **`run-local.sh`** — convenience script that starts the docker-compose stack, waits for services to be healthy, exports the LocalStack AWS credentials, and runs the Spring Boot application with the `local` profile.
+
+### Changed
+- `application-api.yml` — added fallback value for `queueName` (`wm_customer_account_changes_local`) so the application does not crash on startup when `API_APLAZO_CUSTOMER_ACCOUNT_CHANGES_SQS_QUEUE_NAME` is not set.
+
+### Changed
+- **`CustomerAccountFrozenEventProcessor` — status-aware logging.** The processor now decodes the Base64-encoded JSON inner payload into `CustomerAccountFrozenPayload` and branches on `currentStatus`:
+  - `BLOCKED` → emits a dedicated log line with `customerId` and `currentReason`.
+  - `BANNED`  → logs `customerId` and the received status (read-only, no side-effects).
+  - Any other value → logs the unhandled status for observability.
+  Decode errors are caught and logged as warnings without propagating exceptions.
+- Added `CustomerAccountFrozenPayload` POJO (`customerId`, `currentStatus`, `currentReason`, `previousStatus`, `previousReason`) for inner payload deserialization.
+- Added `FROZEN_STATUS_BLOCKED` and `FROZEN_STATUS_BANNED` constants to `CustomerAccountEventConstants`.
+- Renamed `setUp()` to `initListener()` in `CustomerAccountEventsListenerTest` to avoid conflict with the `@BeforeAll static setUp()` in `AbstractAplazoUnitTest`.
+- Expanded `CustomerAccountFrozenEventProcessorTest` with dedicated test cases for `BLOCKED`, `BANNED`, unknown status, and invalid/non-JSON payloads.
+
 ## [1.0.2] - 2026-06-24
 
 ### Fixed
@@ -41,6 +64,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Infrastructure set up (BNPL-958): Dockerfile, Jenkins pipeline (`jenkins/Jenkinsfile.yaml`), and base configuration.
 
 [1.1.0]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.2...v1.1.0
+[1.0.3]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.0...v1.0.1
 [1.0.0]: https://github.com/aplazo/java.aplazo-wm-account-ms/releases/tag/v1.0.0
