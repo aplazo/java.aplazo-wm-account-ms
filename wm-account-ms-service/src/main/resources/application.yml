@@ -16,6 +16,14 @@ spring:
 aplazo:
  openapi:
   generate: ${APLAZO_GENERATE_OPENAPI:false}
+ url:
+  api:
+   # auth-hydra token revocation (C-NEW-01). S2S via IAM + CloudMap; default for dev/local/test.
+   auth-hydra-url: ${AUTH_HYDRA_URL:http://localhost:4445}
+   auth-hydra:
+    # Synchronous blocking timeouts (BNPL-977 NFR — value to be validated with the squad).
+    connect-timeout-ms: ${AUTH_HYDRA_CONNECT_TIMEOUT_MS:2000}
+    read-timeout-ms: ${AUTH_HYDRA_READ_TIMEOUT_MS:5000}
 api:
   aplazo:
     security:

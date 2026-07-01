@@ -9,6 +9,7 @@ import mx.aplazo.annotation.EnableAplazoFeingClientInterceptor;
 import mx.aplazo.annotation.EnableAplazoFilterModule;
 import mx.aplazo.annotation.EnableErrorHandlerModule;
 import mx.aplazo.security.annotation.EnableSecurityModule;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 
@@ -22,6 +23,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableSecurityModule
 @EnableAplazoFeingClientInterceptor
 @EnableAplazoCloudAwsSqs
+@EnableFeignClients(basePackages = "mx.aplazo.microservices.wm.account.feign")
 @Slf4j
 public class WMAccountMsApp {
 	/**
