@@ -1,6 +1,18 @@
 logging:
   level:
     root: info
+api:
+  aplazo:
+    customer:
+      account:
+        changes:
+          sqs:
+            enabled: ${API_APLAZO_CUSTOMER_ACCOUNT_CHANGES_SQS_ENABLED:true}
+            queueName: ${API_APLAZO_CUSTOMER_ACCOUNT_CHANGES_SQS_QUEUE_NAME:wm_customer_account_changes_local}
+aplazo:
+  cloudaws:
+    sqs:
+      region: ${AWS_REGION:us-east-1}
 spring:
   datasource:
     driver-class-name: org.postgresql.Driver

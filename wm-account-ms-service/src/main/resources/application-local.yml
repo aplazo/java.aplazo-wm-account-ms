@@ -1,3 +1,37 @@
 logging:
   level:
     root: info
+    mx.aplazo: debug
+
+spring:
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/wm_account_db
+    username: wm_account_user
+    password: wm_account_pass
+  jpa:
+    show-sql: true
+    hibernate:
+      ddl-auto: none
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+
+api:
+  aplazo:
+    customer:
+      account:
+        changes:
+          sqs:
+            enabled: true
+            queueName: wm_customer_account_changes_local
+
+aplazo:
+  cloudaws:
+    sqs:
+      region: us-east-1
+      endpoint: http://localhost:4566
+
+springdoc:
+  api-docs:
+    enabled: true
