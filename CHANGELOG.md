@@ -5,6 +5,21 @@ All notable changes to the **wm-account-ms** microservice are documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-06-30
+
+### Added
+- **Canonical Unlink flow in wm-account-ms (BNPL-978).** Implements the shared Unlink operation on top of the BNPL-960 contracts, per ADR-012 D-03/D-05/D-10:
+  - **`UnlinkServiceImpl`** orchestrating the strict order: ① state guard on `customer_wm_extended.status` → ② synchronous auth-hydra revocation **before any DB write** (PRIMARY security barrier; `subject=customerId`, `clientId` from config, `externalReferenceId=xClientWm`) → ③ single atomic transaction (`UnlinkAtomicWriter`: INSERT `customer_wm_unlink_record` + UPDATE `customer_wm_extended` with status=UNLINKED and OAuth-field cleanup) → ④ synchronous partners-ms notification (C-NEW-02) → ⑤ 200. Idempotent for `UNLINKED` (200 `CUSTOMER_ALREADY_UNLINKED`, no side effects); `404 CUSTOMER_NOT_FOUND` / `422 CUSTOMER_NOT_ELIGIBLE_FOR_UNLINK` via `AplazoException`. A notification failure does **not** roll back: UNLINKED is preserved, an operational alert is logged, and the caller still receives success (ADR-012 D-10).
+  - **`CustomerWmExtended`** entity + `CustomerWmExtendedRepository` (lookup by `xClientWm` and by `customerId`) mapping the shared `wm_integration.customer_wm_extended` table.
+  - **Two inbound endpoints** wired to the core: `POST /wm/account/unlink [ROLE_API]` (C-02 — Triggers B/C, resolves by `xClientWm`) and `POST /api/v1/wm/account/unlink [ROLE_CUSTOMER]` (C-03 — Trigger A, resolves the `customerId` from the token and looks up the data the App cannot provide). Paths drop the `/internal/` prefix per ADR-012 D-12; auth is `ROLE_API`/`ROLE_CUSTOMER` per D-13.
+  - Config: `api.aplazo.oauth.client-id` (Hydra revocation scope) and `aplazo.url.api.partners-url` (C-NEW-02 target).
+
+### Fixed
+- **Application context failed to start with `BeanDefinitionOverrideException` for `AuthHydraClient.FeignClientSpecification` (introduced in BNPL-977).** `@EnableAplazoFeingClientInterceptor` and `@EnableFeignClients` both register the Feign client specifications. Enabled `spring.main.allow-bean-definition-overriding=true`, matching the Aplazo standard (partners-ms). The issue went unnoticed because the auth-hydra client was only unit-tested (no Spring context boot). Also set a static AWS region under the test profile so the SQS autoconfiguration can build its client when `AWS_REGION` is absent locally.
+
+### Changed
+- Bumped version to `1.3.0` across all modules (`pom.xml`, `wm-account-ms-client`, `wm-account-ms-service`).
+
 ## [1.2.0] - 2026-06-30
 
 ### Added
@@ -85,6 +100,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial project structure for the **wm-account-ms** microservice (multi-module Maven: `wm-account-ms-client`, `wm-account-ms-service`).
 - Infrastructure set up (BNPL-958): Dockerfile, Jenkins pipeline (`jenkins/Jenkinsfile.yaml`), and base configuration.
 
+[1.3.0]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.2...v1.1.0
 [1.0.3]: https://github.com/aplazo/java.aplazo-wm-account-ms/compare/v1.0.2...v1.0.3

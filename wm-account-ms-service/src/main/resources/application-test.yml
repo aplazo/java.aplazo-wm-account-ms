@@ -20,3 +20,9 @@ spring:
       - org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration
       - org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration
       - org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration
+  cloud:
+    aws:
+      # Static region so the SQS autoconfiguration can build its client under the test profile
+      # (no AWS_REGION env locally). Prod resolves the region from the ECS environment.
+      region:
+        static: us-east-1

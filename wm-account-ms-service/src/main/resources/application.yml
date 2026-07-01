@@ -11,6 +11,11 @@ management:
       exposure:
         include: health,info
 spring:
+  main:
+    # Required because @EnableAplazoFeingClientInterceptor and @EnableFeignClients both register
+    # Feign client specifications, which would otherwise abort startup with a
+    # BeanDefinitionOverrideException. Same setting used across Aplazo services (e.g. partners-ms).
+    allow-bean-definition-overriding: true
   profiles:
     active: api
 aplazo:
@@ -24,7 +29,12 @@ aplazo:
     # Synchronous blocking timeouts (BNPL-977 NFR — value to be validated with the squad).
     connect-timeout-ms: ${AUTH_HYDRA_CONNECT_TIMEOUT_MS:2000}
     read-timeout-ms: ${AUTH_HYDRA_READ_TIMEOUT_MS:5000}
+   # partners-ms base URL for the post-Unlink notification (C-NEW-02). Default for dev/local/test.
+   partners-url: ${PARTNERS_MS_URL:http://localhost}
 api:
   aplazo:
     security:
       secret: ${APLAZO_SDK_SECRET:secreto}
+    oauth:
+      # OAuth2 client the Hydra revocation is scoped to (single Walmart/Cashi client). Default for dev/local/test.
+      client-id: ${WM_OAUTH_CLIENT_ID:wm-cashi-client}
