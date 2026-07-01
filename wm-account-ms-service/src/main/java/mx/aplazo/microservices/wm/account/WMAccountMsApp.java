@@ -4,6 +4,7 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import lombok.extern.slf4j.Slf4j;
+import mx.aplazo.annotation.EnableAplazoCloudAwsSqs;
 import mx.aplazo.annotation.EnableAplazoFeingClientInterceptor;
 import mx.aplazo.annotation.EnableAplazoFilterModule;
 import mx.aplazo.annotation.EnableErrorHandlerModule;
@@ -21,6 +22,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @EnableErrorHandlerModule
 @EnableSecurityModule
 @EnableAplazoFeingClientInterceptor
+@EnableAplazoCloudAwsSqs
 @EnableFeignClients(basePackages = "mx.aplazo.microservices.wm.account.feign")
 @Slf4j
 public class WMAccountMsApp {

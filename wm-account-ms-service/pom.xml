@@ -43,6 +43,11 @@
             <artifactId>sqs</artifactId>
         </dependency>
         <dependency>
+            <groupId>mx.aplazo.payloads</groupId>
+            <artifactId>base-sns-payload</artifactId>
+            <version>1.0.1</version>
+        </dependency>
+        <dependency>
             <groupId>mx.aplazo.architecture</groupId>
             <artifactId>outbox</artifactId>
             <version>2.7.16</version>
