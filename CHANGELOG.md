@@ -5,6 +5,16 @@ All notable changes to the **wm-account-ms** microservice are documented in this
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.4] - 2026-07-01
+
+### Added
+- **`CustomerAccountChangePhoneEventProcessor`** — processes `customer.account.change-phone-number` events received via SQS. Decodes the Base64-encoded JSON inner payload into `CustomerAccountChangePhonePayload` (`customerId`, `newPhone`) and logs confirmation of the phone change pending Cashi unlink evaluation (BNPL-887).
+- **`CustomerAccountChangePhonePayload`** POJO for inner payload deserialization.
+- **`EVENT_ACCOUNT_CHANGE_PHONE`** constant added to `CustomerAccountEventConstants`.
+- **`scripts/localstack/init-sqs.sh`** — updated to create SNS topic `customer_account_changes_local` and subscribe the SQS queue with `RawMessageDelivery=true` for full local end-to-end testing.
+- **`docker-compose.yml`** — added `sns` to LocalStack `SERVICES` to support local SNS publishing.
+- Unit tests for `CustomerAccountChangePhoneEventProcessor`: valid payload, invalid Base64, and null payload scenarios.
+
 ## [1.0.3] - 2026-06-25
 
 ### Added
