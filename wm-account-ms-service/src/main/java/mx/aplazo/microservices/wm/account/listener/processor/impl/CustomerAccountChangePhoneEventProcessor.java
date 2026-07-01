@@ -44,7 +44,7 @@ public class CustomerAccountChangePhoneEventProcessor implements CustomerAccount
     private void triggerCashiUnlink(CustomerAccountChangePhonePayload payload) {
         log.info("[CustomerAccountChangePhoneEventProcessor] Phone change confirmed customerId={} — evaluating Cashi unlink",
                 payload.getCustomerId());
-        // TODO BNPL-921: check if customer has active Cashi link (LINKED status)
+        // BNPL-887: check if customer has active Cashi link (LINKED status)
         // and invoke unlink service with reason=PHONE_CHANGED once BNPL-887 is merged.
     }
 }
