@@ -17,13 +17,13 @@ class CustomerAccountChangePhoneEventProcessorTest extends AbstractAplazoUnitTes
     private final CustomerAccountChangePhoneEventProcessor processor = new CustomerAccountChangePhoneEventProcessor();
 
     @Test
-    @DisplayName("getEventType retorna la constante correcta")
+    @DisplayName("getEventType returns the correct constant")
     void getEventType_returnsCorrectConstant() {
         assertThat(processor.getEventType()).isEqualTo(CustomerAccountEventConstants.EVENT_ACCOUNT_CHANGE_PHONE);
     }
 
     @Test
-    @DisplayName("process completa sin lanzar excepción con payload válido")
+    @DisplayName("process completes without throwing exception with valid payload")
     void process_completesWithoutException() {
         String base64Payload = Base64.getEncoder().encodeToString(
                 "{\"customerId\":123,\"newPhone\":\"5551234567\"}".getBytes());
@@ -34,7 +34,7 @@ class CustomerAccountChangePhoneEventProcessorTest extends AbstractAplazoUnitTes
     }
 
     @Test
-    @DisplayName("process no lanza excepción cuando el payload no es Base64 válido")
+    @DisplayName("process does not throw when payload is not valid Base64")
     void process_invalidBase64Payload_doesNotThrow() {
         AplazoBaseSnsPayload payload = AplazoBaseSnsPayload.fromJsonString(
                 "{\"eventType\":\"customer.account.change-phone-number\",\"payload\":\"not-valid-base64!!!\",\"eventMeta\":{}}");
@@ -43,7 +43,7 @@ class CustomerAccountChangePhoneEventProcessorTest extends AbstractAplazoUnitTes
     }
 
     @Test
-    @DisplayName("process no lanza excepción cuando el payload es null")
+    @DisplayName("process does not throw when payload is null")
     void process_nullPayload_doesNotThrow() {
         AplazoBaseSnsPayload payload = AplazoBaseSnsPayload.fromJsonString(
                 "{\"eventType\":\"customer.account.change-phone-number\",\"eventMeta\":{}}");
